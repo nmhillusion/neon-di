@@ -2,7 +2,6 @@ package app.netlify.nmhillusion.ground_injection.scanner;
 
 import app.netlify.nmhillusion.ground_injection.store.PersistentStore;
 
-import javax.jws.WebService;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -19,7 +18,6 @@ import java.util.function.Predicate;
  * created-by: MINGUY1
  */
 
-@WebService
 public class DependencyScanner {
     private final PersistentStore persistentStore;
 

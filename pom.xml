@@ -8,18 +8,23 @@
     <artifactId>ground-injection</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
+
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter</artifactId>
             <version>5.8.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <java.version>8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+
+        <encoding.charset>UTF-8</encoding.charset>
+        <project.build.sourceEncoding>${encoding.charset}</project.build.sourceEncoding>
     </properties>
 
     <build>
@@ -36,6 +41,17 @@
                 <version>2.22.2</version>
                 <configuration>
                     <skipTests>false</skipTests>
+                    <includes>
+                        <include>**Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <encoding>${encoding.charset}</encoding>
                 </configuration>
             </plugin>
         </plugins>

@@ -12,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AppTest {
     @Test
     public void testApp() {
-        App app = new App();
-        assertTrue(app.run(), "Test Run App");
-
         assertTrue(testDependency(), "Test Wiring Dependency");
     }
 
