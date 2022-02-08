@@ -1,6 +1,7 @@
 package app.netlify.nmhillusion.ground_injection;
 
 import app.netlify.nmhillusion.ground_injection.mock.controller.ConsumeController;
+import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -29,6 +30,8 @@ class AppTest {
             engine
                     .putProperties(properties)
                     .run(this.getClass());
+
+            PiLoggerHelper.getLog(this).info("start app by dependency --->");
 
             final Optional<ConsumeController> consumeController =
                     engine.findFirstGroundByClass(ConsumeController.class);

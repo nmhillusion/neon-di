@@ -5,7 +5,7 @@ import app.netlify.nmhillusion.ground_injection.annotation.GroundIn;
 import app.netlify.nmhillusion.ground_injection.annotation.GroundOut;
 import app.netlify.nmhillusion.ground_injection.model.GroundModel;
 import app.netlify.nmhillusion.ground_injection.store.PersistentStore;
-import app.netlify.nmhillusion.ground_injection.util.log.LogHelper;
+import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -83,7 +83,7 @@ public class Injector {
                         /// Mark: Do nothing because not have @GroundIn annotation
                     }
                 } else {
-                    LogHelper.getLog(this).log("Cannot access to field " + field.getName() + " of class " + groundClass.getName());
+                    PiLoggerHelper.getLog(this).warn("Cannot access to field " + field.getName() + " of class " + groundClass.getName());
                 }
             }
         }

@@ -1,11 +1,10 @@
 package app.netlify.nmhillusion.ground_injection.mock.controller;
 
-import app.netlify.nmhillusion.ground_injection.annotation.GroundFactory;
 import app.netlify.nmhillusion.ground_injection.annotation.GroundIn;
 import app.netlify.nmhillusion.ground_injection.annotation.GroundOut;
 import app.netlify.nmhillusion.ground_injection.mock.service.DrinkService;
 import app.netlify.nmhillusion.ground_injection.mock.service.FoodService;
-import app.netlify.nmhillusion.ground_injection.util.log.LogHelper;
+import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 /**
  * date: 2022-02-01
@@ -22,7 +21,7 @@ public class ConsumeController {
     private DrinkService drinkService;
 
     public void execute() {
-        LogHelper.getLog(this).info("Food Service --> " + foodService.service());
-        LogHelper.getLog(this).info("Drink Service --> " + drinkService.service());
+        PiLoggerHelper.getLog(this).info("Food Service --> " + foodService.service());
+        PiLoggerHelper.getLog(this).info("Drink Service --> " + drinkService.service());
     }
 }

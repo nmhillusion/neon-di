@@ -5,7 +5,7 @@ import app.netlify.nmhillusion.ground_injection.annotation.GroundIn;
 import app.netlify.nmhillusion.ground_injection.annotation.GroundOut;
 import app.netlify.nmhillusion.ground_injection.model.GroundModel;
 import app.netlify.nmhillusion.ground_injection.store.PersistentStore;
-import app.netlify.nmhillusion.ground_injection.util.log.LogHelper;
+import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -82,7 +82,7 @@ public class Population {
 
                         waitForFactoryPopulateClasses.remove(model);
                     } catch (Exception ex) {
-                        LogHelper.getLog(this).error(ex.getMessage());
+                        PiLoggerHelper.getLog(this).error(ex.getMessage());
                     }
                 }
             }

@@ -9,7 +9,20 @@
     <version>1.0</version>
     <packaging>jar</packaging>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>com.github.nmhillusion</groupId>
+            <artifactId>pi-logger</artifactId>
+            <version>main-f7b54b8a1e-1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>

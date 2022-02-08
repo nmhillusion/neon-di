@@ -3,7 +3,7 @@ package app.netlify.nmhillusion.ground_injection.mock.service;
 import app.netlify.nmhillusion.ground_injection.annotation.GroundIn;
 import app.netlify.nmhillusion.ground_injection.annotation.GroundOut;
 import app.netlify.nmhillusion.ground_injection.mock.model.Cook;
-import app.netlify.nmhillusion.ground_injection.util.log.LogHelper;
+import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 /**
  * date: 2022-02-01
@@ -31,8 +31,8 @@ public class FoodService implements IService {
 
     @Override
     public String service() {
-        LogHelper.getLog(this).info("Cooking gin: " + ginCook);
-        LogHelper.getLog(this).info("Cooking linz: " + linzCook);
+        PiLoggerHelper.getLog(this).info("Cooking gin: " + ginCook);
+        PiLoggerHelper.getLog(this).info("Cooking linz: " + linzCook);
         return "service by food (fruit: " + fruit + "; meal: " + meal + "); then thirsty so " + drinkService.service();
     }
 }
