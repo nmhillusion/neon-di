@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.github.nmhillusion</groupId>
             <artifactId>pi-logger</artifactId>
-            <version>main-f7b54b8a1e-1</version>
+            <version>main</version>
         </dependency>
 
         <dependency>

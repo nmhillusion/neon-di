@@ -39,7 +39,7 @@ class AppTest {
 
             return true;
         } catch (Exception ex) {
-            ex.printStackTrace();
+            PiLoggerHelper.getLog(this).error(ex);
             return false;
         }
     }
