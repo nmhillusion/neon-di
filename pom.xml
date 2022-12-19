@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>app.netlify.nmhillusion</groupId>
-    <artifactId>pillable-di</artifactId>
+    <artifactId>pill-di</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
