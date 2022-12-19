@@ -1,2 +1,2 @@
-# ground-dependency-injection
-Project Ground Dependency Injection - a light-weight dependency injection library
+# `pill di`
+Project Pill DI - a light-weight dependency injection library on IoC design pattern
