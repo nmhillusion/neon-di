@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 /**
  * date: 2022-01-27
  * <p>
- * created-by: MINGUY1
+ * created-by: nmhillusion
  */
 
 public class DependencyScanner {

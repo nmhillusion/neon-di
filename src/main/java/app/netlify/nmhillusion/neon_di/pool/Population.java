@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * date: 2022-02-02
  * <p>
- * created-by: MINGUY1
+ * created-by: nmhillusion
  */
 
 public class Population {

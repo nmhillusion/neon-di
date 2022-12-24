@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * date: 2022-02-04
  * <p>
- * created-by: MINGUY1
+ * created-by: nmhillusion
  */
 
 public class CollectionUtils {
