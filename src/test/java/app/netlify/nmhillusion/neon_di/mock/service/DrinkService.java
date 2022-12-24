@@ -8,7 +8,7 @@ import app.netlify.nmhillusion.neon_di.mock.seeder.DrinkSeeder;
 /**
  * date: 2022-02-01
  * <p>
- * created-by: MINGUY1
+ * created-by: nmhillusion
  */
 @Neon(name = "drinkService")
 public class DrinkService implements IService {

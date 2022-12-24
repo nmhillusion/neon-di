@@ -5,7 +5,7 @@ import app.netlify.nmhillusion.neon_di.annotation.Neon;
 /**
  * date: 2022-02-02
  * <p>
- * created-by: MINGUY1
+ * created-by: nmhillusion
  */
 
 public class NeonModel {

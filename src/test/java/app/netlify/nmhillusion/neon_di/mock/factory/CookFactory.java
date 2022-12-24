@@ -7,7 +7,7 @@ import app.netlify.nmhillusion.neon_di.mock.model.Cook;
 /**
  * date: 2022-02-04
  * <p>
- * created-by: MINGUY1
+ * created-by: nmhillusion
  */
 @NeonFactory
 public class CookFactory {
