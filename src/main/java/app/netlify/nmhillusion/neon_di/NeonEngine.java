@@ -28,6 +28,7 @@ public class NeonEngine {
             population.populate();
             injector.inject();
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new NeonException(ex);
         }
     }
