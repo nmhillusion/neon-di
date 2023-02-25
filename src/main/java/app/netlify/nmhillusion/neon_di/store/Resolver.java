@@ -80,7 +80,7 @@ public class Resolver {
                             .collect(Collectors.joining(","))
             ));
         } else {
-            PiLoggerHelper.getLog(this).info("Find instance of [%s]".formatted(classToFind));
+            PiLoggerHelper.getLog(this).info("Found instance of [%s]".formatted(classToFind));
         }
 
         return resultList;

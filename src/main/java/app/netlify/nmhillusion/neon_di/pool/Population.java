@@ -88,6 +88,8 @@ public class Population {
                     }
                 }
             }
+        } else {
+            PiLoggerHelper.getLog(this).error("Cannot find ScannedClasses in persistent storage");
         }
     }
 
