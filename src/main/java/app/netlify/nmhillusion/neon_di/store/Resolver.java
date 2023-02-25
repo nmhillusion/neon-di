@@ -99,15 +99,14 @@ public class Resolver {
         }
     }
 
-    public <T> T makeSureOnlyOneNeonInstance(Class<T> classToFind) throws NeonException {
+    public <T> Optional<T> makeSureOnlyOneNeonInstance(Class<T> classToFind) throws NeonException {
         final List<NeonModel<T>> foundList = findNeonsByClass(classToFind);
         if (foundList.isEmpty()) {
-            return null;
-//            throw new NeonException("Cannot find neon by class " + classToFind.getName());
+            return Optional.empty();
         } else if (1 < foundList.size()) {
-            return findNeonInstanceWithSmallestNeon(classToFind, foundList);
+            return Optional.ofNullable(findNeonInstanceWithSmallestNeon(classToFind, foundList));
         } else {
-            return foundList.get(0).getInstance();
+            return Optional.ofNullable(foundList.get(0).getInstance());
         }
     }
 
@@ -191,9 +190,12 @@ public class Resolver {
                 classFieldTypeList.add(clazzToInstance);
 
                 for (Class<?> orderClassToFetch : classFieldTypeList) {
-                    classInstance = CastUtil.safeCast(makeSureOnlyOneNeonInstance(orderClassToFetch), clazzToInstance);
-                    if (null != classInstance) {
-                        break;
+                    final Optional<?> optionalValue = makeSureOnlyOneNeonInstance(orderClassToFetch);
+                    if (optionalValue.isPresent()) {
+                        classInstance = CastUtil.safeCast(optionalValue.get(), clazzToInstance);
+                        if (null != classInstance) {
+                            break;
+                        }
                     }
                 }
             }
