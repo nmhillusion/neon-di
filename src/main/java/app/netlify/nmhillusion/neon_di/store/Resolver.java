@@ -102,7 +102,8 @@ public class Resolver {
     public <T> T makeSureOnlyOneNeonInstance(Class<T> classToFind) throws NeonException {
         final List<NeonModel<T>> foundList = findNeonsByClass(classToFind);
         if (foundList.isEmpty()) {
-            throw new NeonException("Cannot find neon by class " + classToFind.getName());
+            return null;
+//            throw new NeonException("Cannot find neon by class " + classToFind.getName());
         } else if (1 < foundList.size()) {
             return findNeonInstanceWithSmallestNeon(classToFind, foundList);
         } else {
