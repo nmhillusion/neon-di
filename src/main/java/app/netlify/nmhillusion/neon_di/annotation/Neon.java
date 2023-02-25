@@ -8,5 +8,8 @@ import java.lang.annotation.*;
 public @interface Neon {
     String name() default "";
 
+    /**
+     * larger value will take priority
+     */
     int priority() default 100;
 }
