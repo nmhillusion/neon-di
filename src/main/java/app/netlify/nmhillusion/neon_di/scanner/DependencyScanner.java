@@ -1,6 +1,8 @@
 package app.netlify.nmhillusion.neon_di.scanner;
 
+import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
+import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,83 +22,89 @@ import java.util.function.Predicate;
  */
 
 public class DependencyScanner {
-	private final PersistentStore persistentStore;
+    private final PersistentStore persistentStore;
 
-	public DependencyScanner(PersistentStore persistentStore) {
-		this.persistentStore = persistentStore;
-	}
+    public DependencyScanner(PersistentStore persistentStore) {
+        this.persistentStore = persistentStore;
+    }
 
-	public void scan(Class<?> startClass) throws URISyntaxException, MalformedURLException {
-		final List<Class<?>> classList = new ArrayList<>();
-		final URL resource = startClass.getClassLoader().getResource(".");
-		if (null != resource) {
-			final List<URL> packageFiles = findPackages(new File(resource.toURI()));
-			try (URLClassLoader classLoader = new URLClassLoader(packageFiles.toArray(new URL[0]))) {
-				final List<File> classFiles = findClasses(new File(resource.toURI()), file -> file.getName().endsWith(".class"));
-				classFiles.forEach(clazzFile -> {
-					try {
-						final String packageName = startClass.getPackage().getName();
+    public void scan(Class<?> startClass) throws URISyntaxException, IOException, NeonException, ClassNotFoundException {
+        final List<Class<?>> classList = new ArrayList<>();
+        final URL startLocation = startClass.getProtectionDomain().getCodeSource().getLocation();
+        PiLoggerHelper.getLog(this).debug("start Neon Engine from start location: " + startLocation);
 
-						String clazzName = clazzFile.getAbsolutePath()
-								.replaceAll("[\\\\/]", ".");
-						clazzName = clazzName.substring(0, clazzName.lastIndexOf("."));
-						clazzName = clazzName.substring(clazzName.indexOf(packageName));
+        if (null != startLocation) {
+            final List<URL> packageFiles = findPackages(new File(startLocation.toURI()));
+            try (URLClassLoader classLoader = new URLClassLoader(packageFiles.toArray(new URL[0]))) {
+                final List<File> classFiles = findClasses(new File(startLocation.toURI()), file -> file.getName().endsWith(".class"));
+                for (File clazzFile : classFiles) {
+                    final String packageName = startClass.getPackage().getName();
 
-						final Class<?> aClass = classLoader.loadClass(clazzName);
-						classList.add(aClass);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				});
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		persistentStore.getScannedClasses().clear();
-		persistentStore.getScannedClasses().addAll(classList);
-	}
+                    String clazzName = clazzFile.getAbsolutePath()
+                            .replaceAll("[\\\\/]", ".");
+                    if (clazzName.contains(".")) {
+                        clazzName = clazzName.substring(0, clazzName.lastIndexOf("."));
+                    }
 
-	private List<URL> findPackages(File rootFile) throws MalformedURLException {
-		if (null == rootFile) {
-			return Collections.emptyList();
-		} else if (!rootFile.isDirectory()) {
-			return Collections.emptyList();
-		} else {
-			final List<URL> resultList = new ArrayList<>();
-			resultList.add(rootFile.toURI().toURL());
+                    if (clazzName.contains(packageName)) {
+                        clazzName = clazzName.substring(clazzName.indexOf(packageName));
+                    } else {
+                        PiLoggerHelper.getLog(this).warn("ignore for class file: " + clazzFile);
+                        break;
+                    }
 
-			final File[] fileList = rootFile.listFiles();
-			if (null != fileList) {
-				for (File iFile : fileList) {
-					resultList.addAll(findPackages(iFile));
-				}
-			}
-			return resultList;
-		}
-	}
+                    final Class<?> aClass = classLoader.loadClass(clazzName);
+                    classList.add(aClass);
+                }
+            }
+        } else {
+            throw new NeonException("Cannot find start location of neon engine");
+        }
+        persistentStore.getScannedClasses().clear();
+        persistentStore.getScannedClasses().addAll(classList);
+    }
 
-	private List<File> findClasses(File rootFile, Predicate<File> condition) {
-		if (null == rootFile) {
-			return Collections.emptyList();
-		} else {
-			if (rootFile.isFile()) {
-				if (condition.test(rootFile)) {
-					return Collections.singletonList(rootFile);
-				} else {
-					return Collections.emptyList();
-				}
-			} else {
-				final List<File> resultList = new ArrayList<>();
-				final File[] childrenFiles = rootFile.listFiles();
-				if (null != childrenFiles) {
-					for (File childFile : childrenFiles) {
-						resultList.addAll(
-								findClasses(childFile, condition)
-						);
-					}
-				}
-				return resultList;
-			}
-		}
-	}
+    private List<URL> findPackages(File rootFile) throws MalformedURLException {
+        if (null == rootFile) {
+            return Collections.emptyList();
+        } else if (!rootFile.isDirectory()) {
+            return Collections.emptyList();
+        } else {
+            final List<URL> resultList = new ArrayList<>();
+            resultList.add(rootFile.toURI().toURL());
+
+            final File[] fileList = rootFile.listFiles();
+            if (null != fileList) {
+                for (File iFile : fileList) {
+                    resultList.addAll(findPackages(iFile));
+                }
+            }
+            return resultList;
+        }
+    }
+
+    private List<File> findClasses(File rootFile, Predicate<File> condition) {
+        if (null == rootFile) {
+            return Collections.emptyList();
+        } else {
+            if (rootFile.isFile()) {
+                if (condition.test(rootFile)) {
+                    return Collections.singletonList(rootFile);
+                } else {
+                    return Collections.emptyList();
+                }
+            } else {
+                final List<File> resultList = new ArrayList<>();
+                final File[] childrenFiles = rootFile.listFiles();
+                if (null != childrenFiles) {
+                    for (File childFile : childrenFiles) {
+                        resultList.addAll(
+                                findClasses(childFile, condition)
+                        );
+                    }
+                }
+                return resultList;
+            }
+        }
+    }
 }
