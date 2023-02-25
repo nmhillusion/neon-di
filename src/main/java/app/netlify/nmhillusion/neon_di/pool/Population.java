@@ -90,6 +90,15 @@ public class Population {
                     }
                 }
             }
+
+            PiLoggerHelper.getLog(this).info("Completed construction for neon list: [%s]".formatted(
+                            persistentStore.getNeonModelList()
+                                    .stream()
+                                    .map(NeonModel::getOwnClass)
+                                    .map(Class::getName)
+                                    .collect(Collectors.joining(";"))
+                    )
+            );
         } else {
             PiLoggerHelper.getLog(this).error("Cannot find ScannedClasses in persistent storage");
         }
