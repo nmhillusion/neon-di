@@ -14,46 +14,46 @@ import java.util.TreeMap;
  */
 
 public class PersistentStore {
-	private final Map<String, Object> properties = new TreeMap<>();
-	private final Resolver resolver;
-	private List<Class<?>> scannedClasses = new ArrayList<>();
-	private List<NeonModel> neonModelList = new ArrayList<>();
+    private final Map<String, Object> properties = new TreeMap<>();
+    private final Resolver resolver;
+    private List<Class<?>> scannedClasses = new ArrayList<>();
+    private List<NeonModel<?>> neonModelList = new ArrayList<>();
 
-	public PersistentStore() {
-		resolver = new Resolver(this);
-	}
+    public PersistentStore() {
+        resolver = new Resolver(this);
+    }
 
-	public Resolver getResolver() {
-		return resolver;
-	}
+    public Resolver getResolver() {
+        return resolver;
+    }
 
-	public List<Class<?>> getScannedClasses() {
-		return scannedClasses;
-	}
+    public List<Class<?>> getScannedClasses() {
+        return scannedClasses;
+    }
 
-	public PersistentStore setScannedClasses(List<Class<?>> scannedClasses) {
-		this.scannedClasses = scannedClasses;
-		return this;
-	}
+    public PersistentStore setScannedClasses(List<Class<?>> scannedClasses) {
+        this.scannedClasses = scannedClasses;
+        return this;
+    }
 
-	public List<NeonModel> getNeonModelList() {
-		return neonModelList;
-	}
+    public List<NeonModel<?>> getNeonModelList() {
+        return neonModelList;
+    }
 
-	public PersistentStore setNeonModelList(List<NeonModel> neonModelList) {
-		this.neonModelList = neonModelList;
-		return this;
-	}
+    public PersistentStore setNeonModelList(List<NeonModel<?>> neonModelList) {
+        this.neonModelList = neonModelList;
+        return this;
+    }
 
-	public Map<String, Object> getProperties() {
-		return properties;
-	}
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
 
-	public void putProperty(String propertyKey, Object propertyValue) {
-		getProperties().put(propertyKey, propertyValue);
-	}
+    public void putProperty(String propertyKey, Object propertyValue) {
+        getProperties().put(propertyKey, propertyValue);
+    }
 
-	public void putAllProperties(Map<String, Object> moreProperties) {
-		getProperties().putAll(moreProperties);
-	}
+    public void putAllProperties(Map<String, Object> moreProperties) {
+        getProperties().putAll(moreProperties);
+    }
 }

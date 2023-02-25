@@ -24,6 +24,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.nmhillusion</groupId>
+            <artifactId>n2mix-java</artifactId>
+            <version>2022.12.10.3</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.9.0</version>

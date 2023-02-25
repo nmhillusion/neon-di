@@ -8,45 +8,54 @@ import app.netlify.nmhillusion.neon_di.annotation.Neon;
  * created-by: nmhillusion
  */
 
-public class NeonModel {
-	private String name;
-	private Class<?> ownClass;
-	private Neon ownAnnotation;
-	private Object instance;
+public class NeonModel<T> implements Cloneable {
+    private String name;
+    private Class<T> ownClass;
+    private Neon ownAnnotation;
+    private T instance;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public NeonModel setName(String name) {
-		this.name = name;
-		return this;
-	}
+    public NeonModel<T> setName(String name) {
+        this.name = name;
+        return this;
+    }
 
-	public Object getInstance() {
-		return instance;
-	}
+    public Class<T> getOwnClass() {
+        return ownClass;
+    }
 
-	public NeonModel setInstance(Object instance) {
-		this.instance = instance;
-		return this;
-	}
+    public NeonModel<T> setOwnClass(Class<T> ownClass) {
+        this.ownClass = ownClass;
+        return this;
+    }
 
-	public Class<?> getOwnClass() {
-		return ownClass;
-	}
+    public Neon getOwnAnnotation() {
+        return ownAnnotation;
+    }
 
-	public NeonModel setOwnClass(Class<?> ownClass) {
-		this.ownClass = ownClass;
-		return this;
-	}
+    public NeonModel<T> setOwnAnnotation(Neon ownAnnotation) {
+        this.ownAnnotation = ownAnnotation;
+        return this;
+    }
 
-	public Neon getOwnAnnotation() {
-		return ownAnnotation;
-	}
+    public T getInstance() {
+        return instance;
+    }
 
-	public NeonModel setOwnAnnotation(Neon ownAnnotation) {
-		this.ownAnnotation = ownAnnotation;
-		return this;
-	}
+    public NeonModel<T> setInstance(T instance) {
+        this.instance = instance;
+        return this;
+    }
+
+    @Override
+    public NeonModel<T> clone() {
+        return new NeonModel<T>()
+                .setName(name)
+                .setInstance(instance)
+                .setOwnAnnotation(ownAnnotation)
+                .setOwnClass(ownClass);
+    }
 }

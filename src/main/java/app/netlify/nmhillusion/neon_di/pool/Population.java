@@ -1,5 +1,6 @@
 package app.netlify.nmhillusion.neon_di.pool;
 
+import app.netlify.nmhillusion.n2mix.util.CastUtil;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;
@@ -66,7 +67,7 @@ public class Population {
             }
 
             retryTimesToPopulate = 0;
-            final List<NeonModel> waitForFactoryPopulateClasses = persistentStore.getNeonModelList()
+            final List<NeonModel<?>> waitForFactoryPopulateClasses = persistentStore.getNeonModelList()
                     .stream()
                     .filter(factoryPopulation::hasAnnotationToInjectOfClass)
                     .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
@@ -76,9 +77,9 @@ public class Population {
                     throw new RuntimeException("Exceed MAX_TIMES_TO_RETRY_POPULATE: " + MAX_TIMES_TO_RETRY_POPULATE);
                 }
 
-                for (NeonModel model : waitForFactoryPopulateClasses) {
+                for (NeonModel<?> model : waitForFactoryPopulateClasses) {
                     try {
-                        final List<NeonModel> populateDataList = factoryPopulation.populate(model);
+                        final List<NeonModel<?>> populateDataList = factoryPopulation.populate(model);
                         persistentStore.getNeonModelList().addAll(populateDataList);
 
                         waitForFactoryPopulateClasses.remove(model);
@@ -135,10 +136,10 @@ public class Population {
         }
     }
 
-    private boolean doPopulateData(Class<?> clazz, Constructor<?> constructor, Object... argsToConstructor) throws
+    private <T> boolean doPopulateData(Class<T> clazz, Constructor<?> constructor, Object... argsToConstructor) throws
             InvocationTargetException, InstantiationException, IllegalAccessException {
         final Neon neonAnnotation = clazz.getAnnotation(Neon.class);
-        final Object instance = constructor.newInstance(argsToConstructor);
+        final T instance = CastUtil.safeCast(constructor.newInstance(argsToConstructor), clazz);
 
         String name_ = clazz.getName();
         if (null != neonAnnotation) {
@@ -147,7 +148,7 @@ public class Population {
 
         if (persistentStore.getResolver().findFirstNeonInstanceByClass(clazz).isEmpty()) {
             return persistentStore.getNeonModelList()
-                    .add(new NeonModel()
+                    .add(new NeonModel<T>()
                             .setName(name_)
                             .setOwnClass(clazz)
                             .setOwnAnnotation(neonAnnotation)

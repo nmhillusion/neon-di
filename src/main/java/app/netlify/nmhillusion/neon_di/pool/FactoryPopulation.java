@@ -37,7 +37,7 @@ public class FactoryPopulation {
         this.persistentStore = persistentStore;
     }
 
-    public boolean hasAnnotationToInjectOfClass(NeonModel neonModel) {
+    public boolean hasAnnotationToInjectOfClass(NeonModel<?> neonModel) {
         if (null == neonModel
                 || null == neonModel.getOwnClass()) {
             return false;
@@ -68,7 +68,7 @@ public class FactoryPopulation {
         }
     }
 
-    public List<NeonModel> populate(NeonModel model) throws InvocationTargetException, IllegalAccessException, NeonException {
+    public List<NeonModel<?>> populate(NeonModel<?> model) throws InvocationTargetException, IllegalAccessException, NeonException {
         if (hasAnnotationToInjectOfClass(model)) {
             return doPopulate(model);
         } else {
@@ -76,8 +76,8 @@ public class FactoryPopulation {
         }
     }
 
-    private List<NeonModel> doPopulate(NeonModel model) throws InvocationTargetException, IllegalAccessException, NeonException {
-        final List<NeonModel> neonModelList = new ArrayList<>();
+    private List<NeonModel<?>> doPopulate(NeonModel<?> model) throws InvocationTargetException, IllegalAccessException, NeonException {
+        final List<NeonModel<?>> neonModelList = new ArrayList<>();
         final Class<?> clazz = model.getOwnClass();
         final Method[] publicMethods = clazz.getMethods();
 
@@ -92,9 +92,10 @@ public class FactoryPopulation {
         return neonModelList;
     }
 
-    private NeonModel tryToInvokeMethod(NeonModel parentModel, Method method) throws InvocationTargetException,
+    @SuppressWarnings("unchecked")
+    private NeonModel<?> tryToInvokeMethod(NeonModel<?> parentModel, Method method) throws InvocationTargetException,
             IllegalAccessException, NeonException {
-        final NeonModel model = new NeonModel();
+        final NeonModel<Object> model = new NeonModel<>();
 
         final List<Object> parameterValues = new ArrayList<>();
         final Parameter[] parameters = method.getParameters();
@@ -130,7 +131,7 @@ public class FactoryPopulation {
 
         model
                 .setName(name)
-                .setOwnClass(method.getReturnType())
+                .setOwnClass((Class<Object>) method.getReturnType())
                 .setOwnAnnotation(method.getAnnotation(Neon.class))
                 .setInstance(newNeon);
 
