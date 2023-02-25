@@ -50,6 +50,8 @@ public class Population {
                 }
             }
 
+            PiLoggerHelper.getLog(this).debug("Wait for construction classes: " + waitForPopulateClasses);
+
             long retryTimesToPopulate = 0;
             while (!waitForPopulateClasses.isEmpty()) {
                 retryTimesToPopulate += 1;
