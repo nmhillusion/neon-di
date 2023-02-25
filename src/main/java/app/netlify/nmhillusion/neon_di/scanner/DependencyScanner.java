@@ -37,6 +37,11 @@ public class DependencyScanner {
             final List<URL> packageFiles = findPackages(new File(startLocation.toURI()));
             try (URLClassLoader classLoader = new URLClassLoader(packageFiles.toArray(new URL[0]))) {
                 final List<File> classFiles = findClasses(new File(startLocation.toURI()), file -> file.getName().endsWith(".class"));
+
+                if (classFiles.isEmpty()) {
+                    throw new NeonException("Resource class files is empty => cannot construct any neon");
+                }
+
                 for (File clazzFile : classFiles) {
                     final String packageName = startClass.getPackage().getName();
 
