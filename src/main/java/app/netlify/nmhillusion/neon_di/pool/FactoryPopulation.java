@@ -3,6 +3,7 @@ package app.netlify.nmhillusion.neon_di.pool;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;
+import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
 import app.netlify.nmhillusion.neon_di.util.CollectionUtils;
@@ -23,120 +24,120 @@ import java.util.List;
  */
 
 public class FactoryPopulation {
-	private static final List<Class<? extends Annotation>> ANNOTATIONS_TO_FACTORY = List.of(
-			NeonFactory.class
-	);
+    private static final List<Class<? extends Annotation>> ANNOTATIONS_TO_FACTORY = List.of(
+            NeonFactory.class
+    );
 
-	private static final List<Class<? extends Annotation>> ANNOTATIONS_TO_CONSTRUCT = List.of(
-			Neon.class
-	);
-	private final PersistentStore persistentStore;
+    private static final List<Class<? extends Annotation>> ANNOTATIONS_TO_CONSTRUCT = List.of(
+            Neon.class
+    );
+    private final PersistentStore persistentStore;
 
-	protected FactoryPopulation(PersistentStore persistentStore) {
-		this.persistentStore = persistentStore;
-	}
+    protected FactoryPopulation(PersistentStore persistentStore) {
+        this.persistentStore = persistentStore;
+    }
 
-	public boolean hasAnnotationToInjectOfClass(NeonModel neonModel) {
-		if (null == neonModel
-				|| null == neonModel.getOwnClass()) {
-			return false;
-		} else {
-			boolean result = false;
-			for (Class<? extends Annotation> annotation_ : ANNOTATIONS_TO_FACTORY) {
-				if (neonModel.getOwnClass().isAnnotationPresent(annotation_)) {
-					result = true;
-					break;
-				}
-			}
-			return result;
-		}
-	}
+    public boolean hasAnnotationToInjectOfClass(NeonModel neonModel) {
+        if (null == neonModel
+                || null == neonModel.getOwnClass()) {
+            return false;
+        } else {
+            boolean result = false;
+            for (Class<? extends Annotation> annotation_ : ANNOTATIONS_TO_FACTORY) {
+                if (neonModel.getOwnClass().isAnnotationPresent(annotation_)) {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
+        }
+    }
 
-	private boolean hasAnnotationToInjectOfMethod(Method method) {
-		if (null == method) {
-			return false;
-		} else {
-			boolean result = false;
-			for (Class<? extends Annotation> annotation : ANNOTATIONS_TO_CONSTRUCT) {
-				if (method.isAnnotationPresent(annotation)) {
-					result = true;
-					break;
-				}
-			}
-			return result;
-		}
-	}
+    private boolean hasAnnotationToInjectOfMethod(Method method) {
+        if (null == method) {
+            return false;
+        } else {
+            boolean result = false;
+            for (Class<? extends Annotation> annotation : ANNOTATIONS_TO_CONSTRUCT) {
+                if (method.isAnnotationPresent(annotation)) {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
+        }
+    }
 
-	public List<NeonModel> populate(NeonModel model) throws InvocationTargetException, IllegalAccessException {
-		if (hasAnnotationToInjectOfClass(model)) {
-			return doPopulate(model);
-		} else {
-			return Collections.emptyList();
-		}
-	}
+    public List<NeonModel> populate(NeonModel model) throws InvocationTargetException, IllegalAccessException, NeonException {
+        if (hasAnnotationToInjectOfClass(model)) {
+            return doPopulate(model);
+        } else {
+            return Collections.emptyList();
+        }
+    }
 
-	private List<NeonModel> doPopulate(NeonModel model) throws InvocationTargetException, IllegalAccessException {
-		final List<NeonModel> neonModelList = new ArrayList<>();
-		final Class<?> clazz = model.getOwnClass();
-		final Method[] publicMethods = clazz.getMethods();
+    private List<NeonModel> doPopulate(NeonModel model) throws InvocationTargetException, IllegalAccessException, NeonException {
+        final List<NeonModel> neonModelList = new ArrayList<>();
+        final Class<?> clazz = model.getOwnClass();
+        final Method[] publicMethods = clazz.getMethods();
 
-		if (!CollectionUtils.isEmpty(publicMethods)) {
-			for (Method method : publicMethods) {
-				if (hasAnnotationToInjectOfMethod(method)) {
-					neonModelList.add(tryToInvokeMethod(model, method));
-				}
-			}
-		}
+        if (!CollectionUtils.isEmpty(publicMethods)) {
+            for (Method method : publicMethods) {
+                if (hasAnnotationToInjectOfMethod(method)) {
+                    neonModelList.add(tryToInvokeMethod(model, method));
+                }
+            }
+        }
 
-		return neonModelList;
-	}
+        return neonModelList;
+    }
 
-	private NeonModel tryToInvokeMethod(NeonModel parentModel, Method method) throws InvocationTargetException,
-			IllegalAccessException {
-		final NeonModel model = new NeonModel();
+    private NeonModel tryToInvokeMethod(NeonModel parentModel, Method method) throws InvocationTargetException,
+            IllegalAccessException, NeonException {
+        final NeonModel model = new NeonModel();
 
-		final List<Object> parameterValues = new ArrayList<>();
-		final Parameter[] parameters = method.getParameters();
-		if (null == parameters) {
-			throw new RuntimeException("Cannot access parameters of method " + method.getName());
-		}
-		Object newNeon = null;
-		for (Parameter parameter : parameters) {
-			final Inject inject = parameter.getAnnotation(Inject.class);
-			if (null == inject) {
-				throw new RuntimeException("Cannot wire data without @Neon annotation in parameter for method" +
-						" $methodName " +
-						"($parameterType $parameterName)" +
-						" of class $className"
-								.replace("$methodName", method.getName())
-								.replace("$parameterType", parameter.getType().getName())
-								.replace("$parameterName", parameter.getName())
-								.replace("$className", parentModel.getOwnClass().getName())
-				);
-			}
+        final List<Object> parameterValues = new ArrayList<>();
+        final Parameter[] parameters = method.getParameters();
+        if (null == parameters) {
+            throw new RuntimeException("Cannot access parameters of method " + method.getName());
+        }
+        Object newNeon = null;
+        for (Parameter parameter : parameters) {
+            final Inject inject = parameter.getAnnotation(Inject.class);
+            if (null == inject) {
+                throw new RuntimeException("Cannot wire data without @Neon annotation in parameter for method" +
+                        " $methodName " +
+                        "($parameterType $parameterName)" +
+                        " of class $className"
+                                .replace("$methodName", method.getName())
+                                .replace("$parameterType", parameter.getType().getName())
+                                .replace("$parameterName", parameter.getName())
+                                .replace("$className", parentModel.getOwnClass().getName())
+                );
+            }
 
-			final Object parameterValue = persistentStore.getResolver().fetchParameterValueWithNeon(inject, parameter.getType());
-			parameterValues.add(parameterValue);
-		}
+            final Object parameterValue = persistentStore.getResolver().fetchParameterValueWithNeon(inject, parameter.getType());
+            parameterValues.add(parameterValue);
+        }
 
-		newNeon = doInvokeMethod(parentModel.getInstance(), method, parameterValues.toArray());
+        newNeon = doInvokeMethod(parentModel.getInstance(), method, parameterValues.toArray());
 
-		String name = method.getName();
-		String annotationName = method.getAnnotation(Neon.class).name();
-		if (!StringUtils.isBlank(annotationName)) {
-			name = annotationName;
-		}
+        String name = method.getName();
+        String annotationName = method.getAnnotation(Neon.class).name();
+        if (!StringUtils.isBlank(annotationName)) {
+            name = annotationName;
+        }
 
-		model
-				.setName(name)
-				.setOwnClass(method.getReturnType())
-				.setOwnAnnotation(method.getAnnotation(Neon.class))
-				.setInstance(newNeon);
+        model
+                .setName(name)
+                .setOwnClass(method.getReturnType())
+                .setOwnAnnotation(method.getAnnotation(Neon.class))
+                .setInstance(newNeon);
 
-		return model;
-	}
+        return model;
+    }
 
-	private Object doInvokeMethod(Object instance, Method method, Object[] toArray) throws InvocationTargetException, IllegalAccessException {
-		return method.invoke(instance, toArray);
-	}
+    private Object doInvokeMethod(Object instance, Method method, Object[] toArray) throws InvocationTargetException, IllegalAccessException {
+        return method.invoke(instance, toArray);
+    }
 }

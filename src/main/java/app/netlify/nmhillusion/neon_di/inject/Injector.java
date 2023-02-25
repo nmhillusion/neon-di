@@ -3,6 +3,7 @@ package app.netlify.nmhillusion.neon_di.inject;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;
+import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
 import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
@@ -54,15 +55,15 @@ public class Injector {
 		return false;
 	}
 
-	public void inject() throws IllegalAccessException {
-		for (NeonModel model : persistentStore.getPillModelList()) {
+	public void inject() throws IllegalAccessException, NeonException {
+		for (NeonModel model : persistentStore.getNeonModelList()) {
 			if (hasAnnotationToFillClass(model.getOwnClass())) {
 				fillGroupToModel(model);
 			}
 		}
 	}
 
-	private void fillGroupToModel(NeonModel model) throws IllegalAccessException {
+	private void fillGroupToModel(NeonModel model) throws IllegalAccessException, NeonException {
 		final Object instance = model.getInstance();
 		final Class<?> ownClass = model.getOwnClass();
 		final Field[] declaredFields = ownClass.getDeclaredFields();

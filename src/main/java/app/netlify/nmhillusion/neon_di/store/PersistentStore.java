@@ -36,11 +36,11 @@ public class PersistentStore {
 		return this;
 	}
 
-	public List<NeonModel> getPillModelList() {
+	public List<NeonModel> getNeonModelList() {
 		return neonModelList;
 	}
 
-	public PersistentStore setPillModelList(List<NeonModel> neonModelList) {
+	public PersistentStore setNeonModelList(List<NeonModel> neonModelList) {
 		this.neonModelList = neonModelList;
 		return this;
 	}

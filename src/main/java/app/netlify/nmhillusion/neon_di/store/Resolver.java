@@ -2,9 +2,11 @@ package app.netlify.nmhillusion.neon_di.store;
 
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
+import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
 import app.netlify.nmhillusion.neon_di.util.CollectionUtils;
 import app.netlify.nmhillusion.neon_di.util.StringUtils;
+import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,7 +55,7 @@ public class Resolver {
     public List<NeonModel> findNeonsByClass(Class<?> classToFind) {
         final List<NeonModel> resultList = new ArrayList<>();
 
-        for (NeonModel neonModel : persistentStore.getPillModelList()) {
+        for (NeonModel neonModel : persistentStore.getNeonModelList()) {
             if (classToFind.isAssignableFrom(neonModel.getOwnClass())) {
                 final Object instance = neonModel.getInstance();
                 if (classToFind.isInstance(instance)) {
@@ -61,6 +63,11 @@ public class Resolver {
                 }
             }
         }
+
+        if (resultList.isEmpty()) {
+            PiLoggerHelper.getLog(this).warn("Cannot find instance of [%s] from: %s".formatted(classToFind, persistentStore.getNeonModelList()));
+        }
+
         return resultList;
     }
 
@@ -79,10 +86,10 @@ public class Resolver {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T makeSureOnlyOneNeonInstance(Class<T> classToFind) {
+    public <T> T makeSureOnlyOneNeonInstance(Class<T> classToFind) throws NeonException {
         final List<NeonModel> foundList = findNeonsByClass(classToFind);
         if (foundList.isEmpty()) {
-            throw new RuntimeException("Cannot find neon by class " + classToFind.getName());
+            throw new NeonException("Cannot find neon by class " + classToFind.getName());
         } else if (1 < foundList.size()) {
             return findNeonInstanceWithSmallestNeon(classToFind, foundList);
         } else {
@@ -119,7 +126,7 @@ public class Resolver {
         }
     }
 
-    public Object fetchParameterValueWithNeon(Inject injectAnnotation, Class<?> clazzToInstance) {
+    public Object fetchParameterValueWithNeon(Inject injectAnnotation, Class<?> clazzToInstance) throws NeonException {
         Object classInstance = null;
 
         if (null != injectAnnotation) {
@@ -131,7 +138,7 @@ public class Resolver {
 
                         if (!StringUtils.isBlank(refNameToFetch)) {
                             boolean found = false;
-                            for (NeonModel model : persistentStore.getPillModelList()) {
+                            for (NeonModel model : persistentStore.getNeonModelList()) {
                                 if (model.getName().equals(refNameToFetch)) {
                                     classInstance = model.getInstance();
                                     found = true;
@@ -166,7 +173,7 @@ public class Resolver {
                     classFieldTypeList
                             .addAll(Arrays.stream(referenceClasses)
                                     .filter(clazzToInstance::isAssignableFrom)
-                                    .collect(Collectors.toList()));
+                                    .toList());
                 }
                 classFieldTypeList.add(clazzToInstance);
 

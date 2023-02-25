@@ -3,6 +3,7 @@ package app.netlify.nmhillusion.neon_di.pool;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;
+import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
 import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
@@ -22,149 +23,149 @@ import java.util.stream.Collectors;
  */
 
 public class Population {
-	private static final List<Class<? extends Annotation>> ANNOTATIONS_TO_CONSTRUCT = Arrays.asList(
-			Neon.class,
-			NeonFactory.class
-	);
-	private static final int MAX_TIMES_TO_RETRY_POPULATE = 1000;
-	private final PersistentStore persistentStore;
-	private final FactoryPopulation factoryPopulation;
+    private static final List<Class<? extends Annotation>> ANNOTATIONS_TO_CONSTRUCT = Arrays.asList(
+            Neon.class,
+            NeonFactory.class
+    );
+    private static final int MAX_TIMES_TO_RETRY_POPULATE = Integer.MAX_VALUE;
+    private final PersistentStore persistentStore;
+    private final FactoryPopulation factoryPopulation;
 
 
-	public Population(PersistentStore persistentStore) {
-		this.persistentStore = persistentStore;
-		this.factoryPopulation = new FactoryPopulation(persistentStore);
-	}
+    public Population(PersistentStore persistentStore) {
+        this.persistentStore = persistentStore;
+        this.factoryPopulation = new FactoryPopulation(persistentStore);
+    }
 
-	public void populate() throws InvocationTargetException, InstantiationException,
-			IllegalAccessException {
-		final List<Class<?>> allClasses = persistentStore.getScannedClasses();
-		if (null != allClasses) {
-			final List<Class<?>> waitForPopulateClasses = new CopyOnWriteArrayList<>();
+    public void populate() throws InvocationTargetException, InstantiationException,
+            IllegalAccessException, NeonException {
+        final List<Class<?>> allClasses = persistentStore.getScannedClasses();
+        if (null != allClasses) {
+            final List<Class<?>> waitForPopulateClasses = new CopyOnWriteArrayList<>();
 
-			for (Class<?> clazz : allClasses) {
-				if (hasAnnotationToConstruct(clazz)) {
-					waitForPopulateClasses.add(clazz);
-				}
-			}
+            for (Class<?> clazz : allClasses) {
+                if (hasAnnotationToConstruct(clazz)) {
+                    waitForPopulateClasses.add(clazz);
+                }
+            }
 
-			int retryTimesToPopulate = 0;
-			while (!waitForPopulateClasses.isEmpty()) {
-				retryTimesToPopulate += 1;
-				if (retryTimesToPopulate > MAX_TIMES_TO_RETRY_POPULATE) {
-					throw new RuntimeException("Exceed MAX_TIMES_TO_RETRY_POPULATE: " + MAX_TIMES_TO_RETRY_POPULATE);
-				}
+            long retryTimesToPopulate = 0;
+            while (!waitForPopulateClasses.isEmpty()) {
+                retryTimesToPopulate += 1;
+                if (retryTimesToPopulate > MAX_TIMES_TO_RETRY_POPULATE) {
+                    throw new RuntimeException("Exceed MAX_TIMES_TO_RETRY_POPULATE: " + MAX_TIMES_TO_RETRY_POPULATE);
+                }
 
-				for (Class<?> classToPopulate : waitForPopulateClasses) {
-					final boolean populateResult = populateData(classToPopulate);
+                for (Class<?> classToPopulate : waitForPopulateClasses) {
+                    final boolean populateResult = populateData(classToPopulate);
 
-					if (populateResult) {
-						waitForPopulateClasses.remove(classToPopulate);
-					}
-				}
-			}
+                    if (populateResult) {
+                        waitForPopulateClasses.remove(classToPopulate);
+                    }
+                }
+            }
 
-			retryTimesToPopulate = 0;
-			final List<NeonModel> waitForFactoryPopulateClasses = persistentStore.getPillModelList()
-					.stream()
-					.filter(factoryPopulation::hasAnnotationToInjectOfClass)
-					.collect(Collectors.toCollection(CopyOnWriteArrayList::new));
-			while (!waitForFactoryPopulateClasses.isEmpty()) {
-				retryTimesToPopulate += 1;
-				if (retryTimesToPopulate > MAX_TIMES_TO_RETRY_POPULATE) {
-					throw new RuntimeException("Exceed MAX_TIMES_TO_RETRY_POPULATE: " + MAX_TIMES_TO_RETRY_POPULATE);
-				}
+            retryTimesToPopulate = 0;
+            final List<NeonModel> waitForFactoryPopulateClasses = persistentStore.getNeonModelList()
+                    .stream()
+                    .filter(factoryPopulation::hasAnnotationToInjectOfClass)
+                    .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+            while (!waitForFactoryPopulateClasses.isEmpty()) {
+                retryTimesToPopulate += 1;
+                if (retryTimesToPopulate > MAX_TIMES_TO_RETRY_POPULATE) {
+                    throw new RuntimeException("Exceed MAX_TIMES_TO_RETRY_POPULATE: " + MAX_TIMES_TO_RETRY_POPULATE);
+                }
 
-				for (NeonModel model : waitForFactoryPopulateClasses) {
-					try {
-						final List<NeonModel> populateDataList = factoryPopulation.populate(model);
-						persistentStore.getPillModelList().addAll(populateDataList);
+                for (NeonModel model : waitForFactoryPopulateClasses) {
+                    try {
+                        final List<NeonModel> populateDataList = factoryPopulation.populate(model);
+                        persistentStore.getNeonModelList().addAll(populateDataList);
 
-						waitForFactoryPopulateClasses.remove(model);
-					} catch (Exception ex) {
-						PiLoggerHelper.getLog(this).error(ex.getMessage());
-					}
-				}
-			}
-		}
-	}
+                        waitForFactoryPopulateClasses.remove(model);
+                    } catch (Exception ex) {
+                        PiLoggerHelper.getLog(this).error(ex.getMessage());
+                    }
+                }
+            }
+        }
+    }
 
-	private boolean populateData(Class<?> clazz) throws InvocationTargetException, InstantiationException,
-			IllegalAccessException {
-		final Constructor<?>[] constructors = clazz.getConstructors();
+    private boolean populateData(Class<?> clazz) throws InvocationTargetException, InstantiationException,
+            IllegalAccessException, NeonException {
+        final Constructor<?>[] constructors = clazz.getConstructors();
 
-		final Optional<Constructor<?>> noArgsConstructorOptional =
-				Arrays.stream(constructors).filter(constructor -> 0 == constructor.getParameterCount()).findFirst();
+        final Optional<Constructor<?>> noArgsConstructorOptional =
+                Arrays.stream(constructors).filter(constructor -> 0 == constructor.getParameterCount()).findFirst();
 
-		if (noArgsConstructorOptional.isPresent()) {
-			return doPopulateData(clazz, noArgsConstructorOptional.get());
-		} else {
-			boolean result = false;
-			for (Constructor<?> constructor : constructors) {
-				final Parameter[] parameters = constructor.getParameters();
-				final List<Object> parameterValueList = new ArrayList<>();
+        if (noArgsConstructorOptional.isPresent()) {
+            return doPopulateData(clazz, noArgsConstructorOptional.get());
+        } else {
+            boolean result = false;
+            for (Constructor<?> constructor : constructors) {
+                final Parameter[] parameters = constructor.getParameters();
+                final List<Object> parameterValueList = new ArrayList<>();
 
-				for (Parameter parameter : parameters) {
-					final Inject injectAnnotation = parameter.getAnnotation(Inject.class);
-					if (null != injectAnnotation) {
-						final Object parameterValue = persistentStore.getResolver()
-								.fetchParameterValueWithNeon(
-										injectAnnotation,
-										parameter.getType());
-						parameterValueList.add(parameterValue);
-					} else {
-						throw new RuntimeException("Cannot wire data to construct without @Inject annotation of " +
-								"class $className and parameter ($parameterType $parameterName)"
-										.replace("$className", clazz.getName())
-										.replace("$parameterType", parameter.getType().getName())
-										.replace("$parameterName", parameter.getName())
-						);
-					}
-				}
+                for (Parameter parameter : parameters) {
+                    final Inject injectAnnotation = parameter.getAnnotation(Inject.class);
+                    if (null != injectAnnotation) {
+                        final Object parameterValue = persistentStore.getResolver()
+                                .fetchParameterValueWithNeon(
+                                        injectAnnotation,
+                                        parameter.getType());
+                        parameterValueList.add(parameterValue);
+                    } else {
+                        throw new RuntimeException("Cannot wire data to construct without @Inject annotation of " +
+                                "class $className and parameter ($parameterType $parameterName)"
+                                        .replace("$className", clazz.getName())
+                                        .replace("$parameterType", parameter.getType().getName())
+                                        .replace("$parameterName", parameter.getName())
+                        );
+                    }
+                }
 
-				if (parameterValueList.stream().allMatch(Objects::nonNull)) {
-					result = doPopulateData(clazz, constructor, parameterValueList.toArray());
-				}
+                if (parameterValueList.stream().allMatch(Objects::nonNull)) {
+                    result = doPopulateData(clazz, constructor, parameterValueList.toArray());
+                }
 
-				if (result) {
-					break;
-				}
-			}
-			return result;
-		}
-	}
+                if (result) {
+                    break;
+                }
+            }
+            return result;
+        }
+    }
 
-	private boolean doPopulateData(Class<?> clazz, Constructor<?> constructor, Object... argsToConstructor) throws
-			InvocationTargetException, InstantiationException, IllegalAccessException {
-		final Neon neonAnnotation = clazz.getAnnotation(Neon.class);
-		final Object instance = constructor.newInstance(argsToConstructor);
+    private boolean doPopulateData(Class<?> clazz, Constructor<?> constructor, Object... argsToConstructor) throws
+            InvocationTargetException, InstantiationException, IllegalAccessException {
+        final Neon neonAnnotation = clazz.getAnnotation(Neon.class);
+        final Object instance = constructor.newInstance(argsToConstructor);
 
-		String name_ = clazz.getName();
-		if (null != neonAnnotation) {
-			name_ = neonAnnotation.name();
-		}
+        String name_ = clazz.getName();
+        if (null != neonAnnotation) {
+            name_ = neonAnnotation.name();
+        }
 
-		if (persistentStore.getResolver().findFirstNeonInstanceByClass(clazz).isEmpty()) {
-			return persistentStore.getPillModelList()
-					.add(new NeonModel()
-							.setName(name_)
-							.setOwnClass(clazz)
-							.setOwnAnnotation(neonAnnotation)
-							.setInstance(instance)
-					);
-		} else { /// Mark: Existed -> Do not create duplicate
-			return true;
-		}
-	}
+        if (persistentStore.getResolver().findFirstNeonInstanceByClass(clazz).isEmpty()) {
+            return persistentStore.getNeonModelList()
+                    .add(new NeonModel()
+                            .setName(name_)
+                            .setOwnClass(clazz)
+                            .setOwnAnnotation(neonAnnotation)
+                            .setInstance(instance)
+                    );
+        } else { /// Mark: Existed -> Do not create duplicate
+            return true;
+        }
+    }
 
-	private boolean hasAnnotationToConstruct(Class<?> clazz) {
-		boolean result = false;
-		for (Class<? extends Annotation> annotationClass : ANNOTATIONS_TO_CONSTRUCT) {
-			if (clazz.isAnnotationPresent(annotationClass)) {
-				result = true;
-				break;
-			}
-		}
-		return result;
-	}
+    private boolean hasAnnotationToConstruct(Class<?> clazz) {
+        boolean result = false;
+        for (Class<? extends Annotation> annotationClass : ANNOTATIONS_TO_CONSTRUCT) {
+            if (clazz.isAnnotationPresent(annotationClass)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
 }
