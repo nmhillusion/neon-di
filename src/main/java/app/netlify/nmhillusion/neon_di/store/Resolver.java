@@ -79,13 +79,15 @@ public class Resolver {
                             .map(Class::getName)
                             .collect(Collectors.joining(","))
             ));
+        } else {
+            PiLoggerHelper.getLog(this).info("Find instance of [%s]".formatted(classToFind));
         }
 
         return resultList;
     }
 
     public <T> List<T> findNeonInstancesByClass(Class<T> classToFind) {
-        return findNeonsByClass(classToFind).stream().map(grd -> grd.getInstance()).collect(Collectors.toList());
+        return findNeonsByClass(classToFind).stream().map(NeonModel::getInstance).collect(Collectors.toList());
     }
 
     public <T> Optional<T> findFirstNeonInstanceByClass(Class<T> classToFind) {
