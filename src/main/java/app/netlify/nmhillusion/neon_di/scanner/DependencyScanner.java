@@ -65,6 +65,8 @@ public class DependencyScanner {
         } else {
             throw new NeonException("Cannot find start location of neon engine");
         }
+
+        PiLoggerHelper.getLog(this).info("init for classes: " + classList);
         persistentStore.getScannedClasses().clear();
         persistentStore.getScannedClasses().addAll(classList);
     }
