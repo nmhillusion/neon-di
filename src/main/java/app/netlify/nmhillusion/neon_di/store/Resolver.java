@@ -7,13 +7,14 @@ import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
 import app.netlify.nmhillusion.neon_di.util.CollectionUtils;
 import app.netlify.nmhillusion.neon_di.util.StringUtils;
-import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
 
 /**
  * date: 2022-02-04
@@ -72,7 +73,7 @@ public class Resolver {
         }
 
         if (resultList.isEmpty()) {
-            PiLoggerHelper.getLog(this).warn("Cannot find instance of [%s] from: [%s]".formatted(classToFind,
+            getLog(this).warn("Cannot find instance of [%s] from: [%s]".formatted(classToFind,
                     persistentStore.getNeonModelList()
                             .stream()
                             .map(NeonModel::getOwnClass)
@@ -80,7 +81,7 @@ public class Resolver {
                             .collect(Collectors.joining(","))
             ));
         } else {
-            PiLoggerHelper.getLog(this).info("Found instance of [%s]".formatted(classToFind));
+            getLog(this).info("Found instance of [%s]".formatted(classToFind));
         }
 
         return resultList;

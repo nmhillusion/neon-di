@@ -2,7 +2,6 @@ package app.netlify.nmhillusion.neon_di.scanner;
 
 import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
-import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
 
 /**
  * date: 2022-01-27
@@ -31,7 +32,7 @@ public class DependencyScanner {
     public void scan(Class<?> startClass) throws URISyntaxException, IOException, NeonException, ClassNotFoundException {
         final List<Class<?>> classList = new ArrayList<>();
         final URL startLocation = startClass.getProtectionDomain().getCodeSource().getLocation();
-        PiLoggerHelper.getLog(this).debug("start Neon Engine from start location: " + startLocation);
+        getLog(this).debug("start Neon Engine from start location: " + startLocation);
 
         if (null != startLocation) {
             final List<URL> packageFiles = findPackages(new File(startLocation.toURI()));
@@ -54,7 +55,7 @@ public class DependencyScanner {
                     if (clazzName.contains(packageName)) {
                         clazzName = clazzName.substring(clazzName.indexOf(packageName));
                     } else {
-                        PiLoggerHelper.getLog(this).warn("ignore for class file: " + clazzFile);
+                        getLog(this).warn("ignore for class file: " + clazzFile);
                         break;
                     }
 
@@ -66,7 +67,7 @@ public class DependencyScanner {
             throw new NeonException("Cannot find start location of neon engine");
         }
 
-        PiLoggerHelper.getLog(this).info("init for classes: " + classList);
+        getLog(this).info("init for classes: " + classList);
         persistentStore.getScannedClasses().clear();
         persistentStore.getScannedClasses().addAll(classList);
     }

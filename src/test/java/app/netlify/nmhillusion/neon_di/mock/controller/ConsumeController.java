@@ -4,7 +4,8 @@ import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.mock.service.DrinkService;
 import app.netlify.nmhillusion.neon_di.mock.service.FoodService;
-import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
+
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
 
 /**
  * date: 2022-02-01
@@ -21,7 +22,7 @@ public class ConsumeController {
     private DrinkService drinkService;
 
     public void execute() {
-        PiLoggerHelper.getLog(this).info("Food Service --> " + foodService.service());
-        PiLoggerHelper.getLog(this).info("Drink Service --> " + drinkService.service());
+        getLog(this).info("Food Service --> " + foodService.service());
+        getLog(this).info("Drink Service --> " + drinkService.service());
     }
 }

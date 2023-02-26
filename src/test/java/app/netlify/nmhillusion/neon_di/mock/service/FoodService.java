@@ -3,7 +3,8 @@ package app.netlify.nmhillusion.neon_di.mock.service;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.mock.model.Cook;
-import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
+
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
 
 /**
  * date: 2022-02-01
@@ -31,8 +32,8 @@ public class FoodService implements IService {
 
     @Override
     public String service() {
-        PiLoggerHelper.getLog(this).info("Cooking gin: " + ginCook);
-        PiLoggerHelper.getLog(this).info("Cooking linz: " + linzCook);
+        getLog(this).info("Cooking gin: " + ginCook);
+        getLog(this).info("Cooking linz: " + linzCook);
         return "service by food (fruit: " + fruit + "; meal: " + meal + "); then thirsty so " + drinkService.service();
     }
 }

@@ -7,7 +7,6 @@ import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;
 import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
-import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -16,6 +15,8 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
 
 /**
  * date: 2022-02-02
@@ -50,7 +51,7 @@ public class Population {
                 }
             }
 
-            PiLoggerHelper.getLog(this).debug("Wait for construction classes: " + waitForPopulateClasses);
+            getLog(this).debug("Wait for construction classes: " + waitForPopulateClasses);
 
             long retryTimesToPopulate = 0;
             while (!waitForPopulateClasses.isEmpty()) {
@@ -86,12 +87,12 @@ public class Population {
 
                         waitForFactoryPopulateClasses.remove(model);
                     } catch (Exception ex) {
-                        PiLoggerHelper.getLog(this).error(ex.getMessage());
+                        getLog(this).error(ex.getMessage());
                     }
                 }
             }
 
-            PiLoggerHelper.getLog(this).info("Completed construction for neon list: [%s]".formatted(
+            getLog(this).info("Completed construction for neon list: [%s]".formatted(
                             persistentStore.getNeonModelList()
                                     .stream()
                                     .map(NeonModel::getOwnClass)
@@ -100,7 +101,7 @@ public class Population {
                     )
             );
         } else {
-            PiLoggerHelper.getLog(this).error("Cannot find ScannedClasses in persistent storage");
+            getLog(this).error("Cannot find ScannedClasses in persistent storage");
         }
     }
 

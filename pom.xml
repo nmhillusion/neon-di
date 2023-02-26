@@ -19,20 +19,14 @@
     <dependencies>
         <dependency>
             <groupId>com.github.nmhillusion</groupId>
-            <artifactId>pi-logger</artifactId>
-            <version>main</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.nmhillusion</groupId>
             <artifactId>n2mix-java</artifactId>
-            <version>2022.12.10.3</version>
+            <version>2023.2.27</version>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.9.0</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

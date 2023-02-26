@@ -1,7 +1,8 @@
 package app.netlify.nmhillusion.neon_di;
 
 import app.netlify.nmhillusion.neon_di.mock.controller.ConsumeController;
-import app.netlify.nmhillusion.pi_logger.PiLoggerHelper;
+import app.netlify.nmhillusion.pi_logger.constant.LogLevel;
+import app.netlify.nmhillusion.pi_logger.model.LogConfigModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -9,12 +10,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.setDefaultLogConfig;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
     @BeforeAll
-    static void init(){
-
+    static void init() {
+        setDefaultLogConfig(new LogConfigModel()
+                .setColoring(true)
+                .setDisplayLineNumber(true)
+                .setLogLevel(LogLevel.DEBUG)
+                .setOutputToFile(false)
+                .setTimestampPattern("yyyy-MM-dd HH:mm:ss")
+        );
     }
 
     @Test
@@ -37,7 +46,7 @@ class AppTest {
                     .putProperties(properties)
                     .run(this.getClass());
 
-            PiLoggerHelper.getLog(this).info("start app by dependency --->");
+            getLog(this).info("start app by dependency --->");
 
             final Optional<ConsumeController> consumeController =
                     engine.findFirstNeonByClass(ConsumeController.class);
@@ -45,7 +54,7 @@ class AppTest {
 
             return true;
         } catch (Exception ex) {
-            PiLoggerHelper.getLog(this).error(ex.getMessage(), ex);
+            getLog(this).error(ex.getMessage(), ex);
             return false;
         }
     }
