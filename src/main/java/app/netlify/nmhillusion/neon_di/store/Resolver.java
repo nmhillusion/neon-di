@@ -73,7 +73,7 @@ public class Resolver {
         }
 
         if (resultList.isEmpty()) {
-            getLog(this).warn("Cannot find instance of [%s] from: [%s]".formatted(classToFind,
+            getLog(this).debug("Cannot find instance of [%s] from: [%s]".formatted(classToFind,
                     persistentStore.getNeonModelList()
                             .stream()
                             .map(NeonModel::getOwnClass)
@@ -81,7 +81,7 @@ public class Resolver {
                             .collect(Collectors.joining(","))
             ));
         } else {
-            getLog(this).info("Found instance of [%s]".formatted(classToFind));
+            getLog(this).debug("Found instance of [%s]".formatted(classToFind));
         }
 
         return resultList;

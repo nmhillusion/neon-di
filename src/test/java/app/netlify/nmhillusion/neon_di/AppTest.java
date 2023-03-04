@@ -2,7 +2,6 @@ package app.netlify.nmhillusion.neon_di;
 
 import app.netlify.nmhillusion.neon_di.mock.controller.ConsumeController;
 import app.netlify.nmhillusion.pi_logger.constant.LogLevel;
-import app.netlify.nmhillusion.pi_logger.model.LogConfigModel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -10,20 +9,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getDefaultLogConfig;
 import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.setDefaultLogConfig;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
     @BeforeAll
     static void init() {
-        setDefaultLogConfig(new LogConfigModel()
+        getDefaultLogConfig()
                 .setColoring(true)
                 .setDisplayLineNumber(true)
-                .setLogLevel(LogLevel.DEBUG)
-                .setOutputToFile(false)
+                .setLogLevel(LogLevel.INFO)
+                .setIsOutputToFile(false)
                 .setTimestampPattern("yyyy-MM-dd HH:mm:ss")
-        );
+        ;
     }
 
     @Test
