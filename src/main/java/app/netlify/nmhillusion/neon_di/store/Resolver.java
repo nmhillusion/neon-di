@@ -1,12 +1,12 @@
 package app.netlify.nmhillusion.neon_di.store;
 
 import app.netlify.nmhillusion.n2mix.util.CastUtil;
+import app.netlify.nmhillusion.n2mix.util.CollectionUtil;
+import app.netlify.nmhillusion.n2mix.validator.StringValidator;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
-import app.netlify.nmhillusion.neon_di.util.CollectionUtils;
-import app.netlify.nmhillusion.neon_di.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
+import static app.netlify.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
+
 
 /**
  * date: 2022-02-04
@@ -73,7 +74,7 @@ public class Resolver {
         }
 
         if (resultList.isEmpty()) {
-            getLog(this).debug("Cannot find instance of [%s] from: [%s]".formatted(classToFind,
+            getLogger(this).debug("Cannot find instance of [%s] from: [%s]".formatted(classToFind,
                     persistentStore.getNeonModelList()
                             .stream()
                             .map(NeonModel::getOwnClass)
@@ -81,7 +82,7 @@ public class Resolver {
                             .collect(Collectors.joining(","))
             ));
         } else {
-            getLog(this).debug("Found instance of [%s]".formatted(classToFind));
+            getLogger(this).debug("Found instance of [%s]".formatted(classToFind));
         }
 
         return resultList;
@@ -145,11 +146,11 @@ public class Resolver {
         if (null != injectAnnotation) {
             {/// Mark: resolve by name
                 final String[] itemNames = injectAnnotation.names();
-                if (!CollectionUtils.isEmpty(itemNames)) {
+                if (!CollectionUtil.isNullOrEmpty(itemNames)) {
                     for (int nameIndex = 0; nameIndex < itemNames.length && null == classInstance; ++nameIndex) {
                         final String refNameToFetch = itemNames[nameIndex];
 
-                        if (!StringUtils.isBlank(refNameToFetch)) {
+                        if (!StringValidator.isBlank(refNameToFetch)) {
                             boolean found = false;
                             for (NeonModel<?> model : persistentStore.getNeonModelList()) {
                                 if (model.getName().equals(refNameToFetch)) {
@@ -170,7 +171,7 @@ public class Resolver {
 
             if (null == classInstance) {/// Mark: resolve by properties
                 final String propertyKey = injectAnnotation.propertyKey();
-                if (!StringUtils.isBlank(propertyKey)) {
+                if (!StringValidator.isBlank(propertyKey)) {
                     final Optional<?> propertyValueOptional = getProperty(propertyKey, clazzToInstance);
                     if (propertyValueOptional.isPresent()) {
                         classInstance = CastUtil.safeCast(propertyValueOptional.get(), clazzToInstance);
@@ -182,7 +183,7 @@ public class Resolver {
                 final Class<?>[] referenceClasses = injectAnnotation.referenceClasses();
                 final List<Class<?>> classFieldTypeList = new ArrayList<>();
 
-                if (!CollectionUtils.isEmpty(referenceClasses)) {
+                if (!CollectionUtil.isNullOrEmpty(referenceClasses)) {
                     classFieldTypeList
                             .addAll(Arrays.stream(referenceClasses)
                                     .filter(clazzToInstance::isAssignableFrom)

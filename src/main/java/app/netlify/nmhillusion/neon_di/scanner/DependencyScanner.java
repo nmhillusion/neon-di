@@ -1,6 +1,5 @@
 package app.netlify.nmhillusion.neon_di.scanner;
 
-import app.netlify.nmhillusion.n2mix.helper.log.LogHelper;
 import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
 
@@ -15,7 +14,7 @@ import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import static app.netlify.nmhillusion.n2mix.helper.log.LogHelper.getLog;
+import static app.netlify.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
 
 /**
  * date: 2022-01-27
@@ -55,7 +54,7 @@ public class DependencyScanner {
         final List<Class<?>> classList = new ArrayList<>();
         final String packageName = startClass.getPackage().getName();
         final URL startLocation = startClass.getProtectionDomain().getCodeSource().getLocation();
-        getLog(this).debug("start Neon Engine from start location: " + startLocation);
+        getLogger(this).debug("start Neon Engine from start location: " + startLocation);
 
         if (null != startLocation) {
             final List<URL> packageFiles = findPackages(new File(startLocation.toURI()));
@@ -64,7 +63,7 @@ public class DependencyScanner {
                 final List<String> classNameCollection = new ArrayList<>();
 
                 if (!classFiles_.isEmpty()) {
-                    LogHelper.getLog(this).infoFormat("scan class from directory, size: %s ", classFiles_.size());
+                    getLogger(this).infoFormat("scan class from directory, size: %s ", classFiles_.size());
                     classNameCollection.addAll(
                             classFiles_.stream()
                                     .map(File::getAbsolutePath)
@@ -72,22 +71,22 @@ public class DependencyScanner {
                     );
                 } else if (startLocation.getFile().endsWith(".jar") || startLocation.getFile().endsWith(".exe")) {
                     final Set<String> classNamesFromJarFile = getClassNamesFromJarFile(new File(startLocation.toURI()));
-                    LogHelper.getLog(this).infoFormat("scan class from jar file, size: %s ", classNamesFromJarFile.size());
+                    getLogger(this).infoFormat("scan class from jar file, size: %s ", classNamesFromJarFile.size());
                     classNameCollection.addAll(classNamesFromJarFile);
                 }
 
                 if (classNameCollection.isEmpty()) {
                     throw new NeonException("Resource class files is empty => cannot construct any neon, from start location: " + startLocation);
                 } else {
-                    getLog(this).debugFormat("==> class files: %s; packageName: %s", classNameCollection, packageName);
+                    getLogger(this).debugFormat("==> class files: %s; packageName: %s", classNameCollection, packageName);
                 }
 
                 for (String clazzName : classNameCollection) {
                     clazzName = clazzName
                             .replaceAll("[\\\\/]", ".");
-                    
+
                     if (clazzName.contains(packageName)) {
-                        getLog(this).traceFormat(">> started loading class name: %s", clazzName);
+                        getLogger(this).traceFormat(">> started loading class name: %s", clazzName);
                         if (clazzName.contains(".class")) {
                             clazzName = clazzName.substring(0, clazzName.lastIndexOf(".class"));
                         }
@@ -95,12 +94,12 @@ public class DependencyScanner {
 
                         clazzName = clazzName.substring(clazzName.indexOf(packageName));
 
-                        LogHelper.getLog(this).traceFormat("<< loaded class name: %s", clazzName);
+                        getLogger(this).traceFormat("<< loaded class name: %s", clazzName);
 
                         final Class<?> aClass = classLoader.loadClass(clazzName);
                         classList.add(aClass);
                     } else {
-                        getLog(this).debug("ignore for class file not in this package: " + clazzName);
+                        getLogger(this).debug("ignore for class file not in this package: " + clazzName);
                     }
                 }
             }
@@ -108,7 +107,7 @@ public class DependencyScanner {
             throw new NeonException("Cannot find start location of neon engine");
         }
 
-        getLog(this).info("init for classes: " + classList);
+        getLogger(this).info("init for classes: " + classList);
         persistentStore.getScannedClasses().clear();
         persistentStore.getScannedClasses().addAll(classList);
     }

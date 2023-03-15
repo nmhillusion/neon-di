@@ -1,13 +1,13 @@
 package app.netlify.nmhillusion.neon_di.pool;
 
+import app.netlify.nmhillusion.n2mix.util.CollectionUtil;
+import app.netlify.nmhillusion.n2mix.validator.StringValidator;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;
 import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.model.NeonModel;
 import app.netlify.nmhillusion.neon_di.store.PersistentStore;
-import app.netlify.nmhillusion.neon_di.util.CollectionUtils;
-import app.netlify.nmhillusion.neon_di.util.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -81,7 +81,7 @@ public class FactoryPopulation {
         final Class<?> clazz = model.getOwnClass();
         final Method[] publicMethods = clazz.getMethods();
 
-        if (!CollectionUtils.isEmpty(publicMethods)) {
+        if (!CollectionUtil.isNullOrEmpty(publicMethods)) {
             for (Method method : publicMethods) {
                 if (hasAnnotationToInjectOfMethod(method)) {
                     neonModelList.add(tryToInvokeMethod(model, method));
@@ -125,7 +125,7 @@ public class FactoryPopulation {
 
         String name = method.getName();
         String annotationName = method.getAnnotation(Neon.class).name();
-        if (!StringUtils.isBlank(annotationName)) {
+        if (!StringValidator.isBlank(annotationName)) {
             name = annotationName;
         }
 
