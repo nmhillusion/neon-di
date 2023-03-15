@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
+import static app.netlify.nmhillusion.n2mix.helper.log.LogHelper.getLog;
 
 /**
  * date: 2022-01-27
@@ -78,14 +78,16 @@ public class DependencyScanner {
 
                 if (classNameCollection.isEmpty()) {
                     throw new NeonException("Resource class files is empty => cannot construct any neon, from start location: " + startLocation);
+                } else {
+                    getLog(this).debugFormat("==> class files: %s; packageName: %s", classNameCollection, packageName);
                 }
 
                 for (String clazzName : classNameCollection) {
+                    clazzName = clazzName
+                            .replaceAll("[\\\\/]", ".");
+                    
                     if (clazzName.contains(packageName)) {
-                        LogHelper.getLog(this).traceFormat(">> started loading class name: %s", clazzName);
-
-                        clazzName = clazzName
-                                .replaceAll("[\\\\/]", ".");
+                        getLog(this).traceFormat(">> started loading class name: %s", clazzName);
                         if (clazzName.contains(".class")) {
                             clazzName = clazzName.substring(0, clazzName.lastIndexOf(".class"));
                         }
