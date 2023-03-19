@@ -41,6 +41,15 @@ public class NeonEngine {
         return persistentStore.getResolver().findFirstNeonInstanceByClass(classToFind);
     }
 
+    public <T> T makeSureObtainNeon(Class<T> clazz2Obtain) {
+        final Optional<T> neonByClass = findFirstNeonByClass(clazz2Obtain);
+        if (neonByClass.isEmpty()) {
+            throw new RuntimeException("Cannot find instance of " + clazz2Obtain);
+        }
+
+        return neonByClass.get();
+    }
+
     public NeonEngine putProperties(Map<String, Object> moreProperties) {
         persistentStore.putAllProperties(moreProperties);
         return this;
