@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>app.netlify.nmhillusion</groupId>
+    <groupId>tech.nmhillusion</groupId>
     <artifactId>neon-di</artifactId>
-    <version>1.0</version>
+    <version>2024.5.5</version>
     <packaging>jar</packaging>
 
     <repositories>
