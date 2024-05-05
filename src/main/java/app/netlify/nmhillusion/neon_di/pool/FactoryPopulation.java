@@ -1,7 +1,7 @@
 package app.netlify.nmhillusion.neon_di.pool;
 
-import app.netlify.nmhillusion.n2mix.util.CollectionUtil;
-import app.netlify.nmhillusion.n2mix.validator.StringValidator;
+import tech.nmhillusion.n2mix.util.CollectionUtil;
+import tech.nmhillusion.n2mix.validator.StringValidator;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;

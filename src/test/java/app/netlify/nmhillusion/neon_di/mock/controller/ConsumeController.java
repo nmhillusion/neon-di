@@ -5,7 +5,7 @@ import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.mock.service.DrinkService;
 import app.netlify.nmhillusion.neon_di.mock.service.FoodService;
 
-import static app.netlify.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
+import static tech.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
 
 /**
  * date: 2022-02-01

@@ -11,6 +11,10 @@
 
     <repositories>
         <repository>
+            <id>maven-main</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -20,7 +24,7 @@
         <dependency>
             <groupId>com.github.nmhillusion</groupId>
             <artifactId>n2mix-java</artifactId>
-            <version>2023.3.16</version>
+            <version>2024.2.27</version>
         </dependency>
 
         <dependency>

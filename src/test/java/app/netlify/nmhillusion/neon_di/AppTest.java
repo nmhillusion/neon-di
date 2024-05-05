@@ -2,17 +2,17 @@ package app.netlify.nmhillusion.neon_di;
 
 import app.netlify.nmhillusion.neon_di.exception.NeonException;
 import app.netlify.nmhillusion.neon_di.mock.controller.ConsumeController;
-import app.netlify.nmhillusion.pi_logger.constant.LogLevel;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import tech.nmhillusion.pi_logger.constant.LogLevel;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getDefaultLogConfig;
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static tech.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
+import static tech.nmhillusion.pi_logger.PiLoggerFactory.getDefaultLogConfig;
 
 class AppTest {
     private static NeonEngine engine;
@@ -21,7 +21,6 @@ class AppTest {
     static void init() throws NeonException {
         getDefaultLogConfig()
                 .setColoring(true)
-                .setDisplayLineNumber(true)
                 .setLogLevel(LogLevel.INFO)
                 .setIsOutputToFile(false)
                 .setTimestampPattern("yyyy-MM-dd HH:mm:ss")
@@ -40,7 +39,7 @@ class AppTest {
                 .putProperties(properties)
                 .run(AppTest.class);
 
-        getLog(AppTest.class).info("start app by dependency --->");
+        getLogger(AppTest.class).info("start app by dependency --->");
     }
 
     @Test
@@ -56,7 +55,7 @@ class AppTest {
 
             return true;
         } catch (Exception ex) {
-            getLog(this).error(ex.getMessage(), ex);
+            getLogger(this).error(ex);
             return false;
         }
     }
@@ -74,7 +73,7 @@ class AppTest {
 
             return true;
         } catch (Exception ex) {
-            getLog(this).error(ex.getMessage(), ex);
+            getLogger(this).error(ex);
             return false;
         }
     }

@@ -1,6 +1,6 @@
 package app.netlify.nmhillusion.neon_di.pool;
 
-import app.netlify.nmhillusion.n2mix.util.CastUtil;
+import tech.nmhillusion.n2mix.util.CastUtil;
 import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.annotation.NeonFactory;
@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
+import static tech.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
 
 /**
  * date: 2022-02-02
@@ -51,7 +51,7 @@ public class Population {
                 }
             }
 
-            getLog(this).debug("Wait for construction classes: " + waitForPopulateClasses);
+            getLogger(this).debug("Wait for construction classes: " + waitForPopulateClasses);
 
             long retryTimesToPopulate = 0;
             while (!waitForPopulateClasses.isEmpty()) {
@@ -87,12 +87,12 @@ public class Population {
 
                         waitForFactoryPopulateClasses.remove(model);
                     } catch (Exception ex) {
-                        getLog(this).error(ex.getMessage());
+                        getLogger(this).error(ex.getMessage());
                     }
                 }
             }
 
-            getLog(this).info("Completed construction for neon list: [%s]".formatted(
+            getLogger(this).info("Completed construction for neon list: [%s]".formatted(
                             persistentStore.getNeonModelList()
                                     .stream()
                                     .map(NeonModel::getOwnClass)
@@ -101,7 +101,7 @@ public class Population {
                     )
             );
         } else {
-            getLog(this).error("Cannot find ScannedClasses in persistent storage");
+            getLogger(this).error("Cannot find ScannedClasses in persistent storage");
         }
     }
 

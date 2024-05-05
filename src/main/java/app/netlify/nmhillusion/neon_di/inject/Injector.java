@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
+import static tech.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
 
 /**
  * date: 2022-02-02
@@ -85,7 +85,7 @@ public class Injector {
                         /// Mark: Do nothing because not have @Inject annotation
                     }
                 } else {
-                    getLog(this).warn("Cannot access to field " + field.getName() + " of class " + ownClass.getName());
+                    getLogger(this).warn("Cannot access to field " + field.getName() + " of class " + ownClass.getName());
                 }
             }
         }

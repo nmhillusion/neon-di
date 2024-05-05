@@ -4,7 +4,8 @@ import app.netlify.nmhillusion.neon_di.annotation.Inject;
 import app.netlify.nmhillusion.neon_di.annotation.Neon;
 import app.netlify.nmhillusion.neon_di.mock.model.Cook;
 
-import static app.netlify.nmhillusion.pi_logger.PiLoggerFactory.getLog;
+import static tech.nmhillusion.n2mix.helper.log.LogHelper.getLogger;
+
 
 /**
  * date: 2022-02-01
@@ -32,8 +33,8 @@ public class FoodService implements IService {
 
     @Override
     public String service() {
-        getLog(this).info("Cooking gin: " + ginCook);
-        getLog(this).info("Cooking linz: " + linzCook);
+        getLogger(this).info("Cooking gin: " + ginCook);
+        getLogger(this).info("Cooking linz: " + linzCook);
         return "service by food (fruit: " + fruit + "; meal: " + meal + "); then thirsty so " + drinkService.service();
     }
 }
